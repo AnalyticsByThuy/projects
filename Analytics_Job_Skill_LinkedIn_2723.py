@@ -63,27 +63,6 @@ def check_job(location):
 
 dfs = pd.concat([check_job(location) for location in ['Vietnam', 'India']], ignore_index=True)
 
-
-
-import spacy
-from collections import Counter
-import re
-import pandas as pd
-
-nlp = spacy.load('en_core_web_sm')
-
-kw = []
-for content in dfs['position']:
-    doc = nlp(content)
-    for entity in doc.ents:
-        if entity.label_ not in ['CARDINAL', 'GPE', 'DATE'] and not re.search(r'[^a-zA-Z\s]', entity.text):
-            kw.append(entity.text)
-
-kw_cnt = Counter(kw)
-filtered_kw = {kw: freq for kw, freq in sorted(kw_cnt.items(), key=lambda x: x[1], reverse=True)[:10]}
-kws = pd.DataFrame(filtered_kw.items(), columns=['top_kw', 'Frequency'])
-
-
 # Data Cleaning
 
 dfs.drop_duplicates(subset=['job url'], keep='first')
