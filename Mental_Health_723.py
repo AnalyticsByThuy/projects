@@ -1,10 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Import Library
-
-# In[ ]:
-
+# Import Library
 
 import requests
 import re
@@ -38,10 +32,7 @@ InteractiveShell.ast_node_interactivity = 'all'
 from dateutil.relativedelta import relativedelta
 
 
-# # Data Collection
-
-# In[3]:
-
+# Data Collection
 
 def created_modify(pst):
     today = datetime.date.today()
@@ -65,9 +56,7 @@ def data_clean(f):
     return f
 
 
-# ## Google News
-
-# In[ ]:
+# Google News
 
 
 headers = { }
@@ -89,10 +78,7 @@ df = pd.DataFrame(data)
 data_clean(df)
 
 
-# ## Reddit posts
-
-# In[ ]:
-
+# Reddit posts
 
 url = 'https://www.reddit.com/search/'
 data = []
@@ -113,12 +99,9 @@ rd = pd.DataFrame(data)
 data_clean(rd)
 
 
-# # Trend and Sentiment Analysis
+# Trend and Sentiment Analysis
 
-# ## Dataset
-
-# In[6]:
-
+## Dataset
 
 analyzer = SentimentIntensityAnalyzer()
 df['sentiment'] = df['title'].apply(lambda x: analyzer.polarity_scores(x.lower())['compound'])
@@ -144,10 +127,7 @@ group by date, sentiment_state
 ''', globals())
 
 
-# ## Visualization
-
-# In[ ]:
-
+## Visualization
 
 color_dict = {'Positive': '#3AA6B9', 'Negative': '#FF9EAA', 'Neutral': '#64CCC5'}
 def V1():
@@ -173,14 +153,10 @@ def V1():
 V1()
 
 
-# # Media Bias Analysis
+# Media Bias Analysis
 
-# ## Dataset
-
-# In[8]:
-
-
-#Sentiment Bias by Media
+## Dataset
+### Sentiment Bias by Media
 A0 = sqldf('''
 SELECT source, round(AVG(sentiment), 2) AS avg_polarity, round(bias, 2) as bias
 FROM (
@@ -193,7 +169,7 @@ FROM (
 GROUP BY source
 ''', globals())
 
-#Top User Engagement
+### Top User Engagement
 A1 = sqldf('''
 WITH a AS (
     SELECT subreddit, title, link, (comments+votes) AS engagement_rd, date
@@ -218,10 +194,7 @@ ORDER BY date desc
 ''', globals())
 
 
-# ## Visualization
-
-# In[ ]:
-
+## Visualization
 
 def V2():
     theta = np.linspace(0, 2*np.pi, len(A0['source']), endpoint=False)
@@ -249,11 +222,7 @@ def V2():
 
     plt.tight_layout()
     return plt.show()
-
 V2()
-
-
-# In[ ]:
 
 
 def A1S():
@@ -273,17 +242,12 @@ def A1S():
     with open('M_table.html', 'w') as file:
         file.write(html_table)
     return display(HTML(html_table))
-
-
 A1S()
 
 
-# # Geographic Analysis
+# Geographic Analysis
 
-# ##  Dataset
-
-# In[10]:
-
+## Dataset
 
 B = sqldf('''
 select date, lower(title) as title, sentiment from df
@@ -312,11 +276,7 @@ kw_cnt = Counter(kw)
 filtered_kw = {kw: freq for kw, freq in sorted(kw_cnt.items(), key=lambda x: x[1], reverse=True)[:10]}
 kws = pd.DataFrame(filtered_kw.items(), columns=['top_kw', 'Frequency'])
 
-
-# ## Visualization
-
-# In[ ]:
-
+## Visualization
 
 def V3():
     map_center = [0, 0]
@@ -344,32 +304,13 @@ def V3():
 V3()
 
 
-# # Topic Modeling
+# Topic Modeling
 
-# ## Dataset
-
-# 
-# ### Keywords
-# 
-# 
-# 
-# 
-
-# In[ ]:
-
+## Dataset
 
 keywords = sqldf('''
 select * from kws
 ''', globals())
-
-
-# ### Topics (LDA)
-# 
-# 
-# 
-# 
-
-# In[ ]:
 
 
 stopwords = ['a', 'the', 'and', 'of', 'in', 'to', 'for', 'on', 'is', 'are', 'that', 'this', 'with', 'as', 'by', 'from', 'at', 'be']
@@ -389,12 +330,7 @@ def print_topics(model, feature_names, n_top_words):
     return topics
 t = print_topics(lda, feature_names, 10)
 
-
-# ## Visualization
-# 
-
-# In[ ]:
-
+## Visualization
 
 def V4():
     plt.axis([0, 10, 0, 10])
@@ -412,10 +348,7 @@ def V4():
 V4()
 
 
-# # Deeper Analysis
-
-# In[15]:
-
+# Deeper Analysis
 
 reddit_quartile = sqldf('''
     with a as (
@@ -452,10 +385,6 @@ reddit_quartile_filtered = sqldf('''
     order by reddit_quartile, frequency desc;
 ''', globals())
 
-
-# In[ ]:
-
-
 def DA(tb):
     fig, ax = plt.subplots()
     ax.axis('off')
@@ -467,4 +396,3 @@ def DA(tb):
 
 DA(reddit_quartile)
 DA(reddit_quartile_filtered)
-
