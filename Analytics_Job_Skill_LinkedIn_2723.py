@@ -1,22 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# <style>
-# @keyframes colorChange {
-#   0% { color: red; }
-#   25% { color: blue; }
-#   50% { color: green; }
-#   75% { color: orange; }
-#   100% { color: purple; }
-# }
-# </style>
-# 
-# <h1 style="animation: colorChange 5s infinite;">Which Analytics Skills Are in High Demand Today?</h1>
-
-# # <span style="text-transform:uppercase">Web scraping</span>
-
-# In[1]:
-
+# Web scraping
 
 import requests
 import re
@@ -35,9 +17,6 @@ from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
 
 headers = {}
-
-
-# In[23]:
 
 
 skills = ['python', 'power bi', 'jupyter', 'sql', 'tableau', 'excel']
@@ -85,8 +64,6 @@ def check_job(location):
 dfs = pd.concat([check_job(location) for location in ['Vietnam', 'India']], ignore_index=True)
 
 
-# In[30]:
-
 
 import spacy
 from collections import Counter
@@ -107,10 +84,7 @@ filtered_kw = {kw: freq for kw, freq in sorted(kw_cnt.items(), key=lambda x: x[1
 kws = pd.DataFrame(filtered_kw.items(), columns=['top_kw', 'Frequency'])
 
 
-# ## Data Cleaning
-
-# In[ ]:
-
+# Data Cleaning
 
 dfs.drop_duplicates(subset=['job url'], keep='first')
 dfs.fillna('Not Specified')
@@ -118,10 +92,7 @@ dfs = dfs.replace('None', 'Not Specified')
 dfs.reset_index(drop=True)
 
 
-# ## Save CSV file
-
-# In[ ]:
-
+# Save CSV file
 
 #today = datetime.date.today()
 #filename = f'analytics_linkedin_{today}.csv'
@@ -129,12 +100,8 @@ dfs.reset_index(drop=True)
 dfs = pd.read_csv('analytics_linkedin_2023-07-02.csv')
 
 
-# # <span style="text-transform:uppercase">Data Visualization</span>
-
+# Data Visualization<
 # ## Prep.
-
-# In[ ]:
-
 
 get_ipython().system('pip install pandasql')
 get_ipython().system('pip install --upgrade sqlalchemy==1.4.46')
@@ -149,9 +116,6 @@ import sqlite3
 
 # ## Dataset
 
-# In[ ]:
-
-
 df_skill = pd.DataFrame()
 for skill in skills:
     filtered_df_skill = sqldf(f"SELECT [area], [role], [Level], [position],'{skill}' AS [skill] FROM dfs WHERE [Req. Skills] LIKE '%{skill}%'", globals())
@@ -164,9 +128,6 @@ display_df[['Job Function', 'Industry', 'city', 'area', 'Level', 'list_date', 's
 
 
 # ## Setting: Dropdown Widgets
-
-# In[ ]:
-
 
 roles = list(set(dfs['role']))
 areas = list(set(dfs['area']))
@@ -183,9 +144,6 @@ pie_output = widgets.Output()
 
 # ## Table (HTML)
 
-# In[ ]:
-
-
 def update_output(selected_roles, selected_areas):
     table_output.clear_output()
     filtered_df = display_df[display_df['role'].isin(selected_roles) & display_df['area'].isin(selected_areas)]
@@ -197,9 +155,6 @@ def update_output(selected_roles, selected_areas):
 
 
 # ## Bar Graph: Identify Valuable Skills for Each Role
-
-# In[ ]:
-
 
 def update_graph(selected_roles, selected_areas):
     graph_output.clear_output()
@@ -228,9 +183,6 @@ def update_graph(selected_roles, selected_areas):
 
 # ## Pie Graph: Analyze In-Demand Skills
 
-# In[ ]:
-
-
 def update_pie(selected_roles, selected_areas):
     pie_output.clear_output()
     filtered_df = df_skill[df_skill['role'].isin(selected_roles) & df_skill['area'].isin(selected_areas)]
@@ -245,17 +197,11 @@ def update_pie(selected_roles, selected_areas):
 
 # ## Initial values
 
-# In[ ]:
-
-
 selected_roles = roles
 selected_areas = areas
 
 
 # ## Dropdown Update
-
-# In[ ]:
-
 
 def dropdowns_observer(*args):
     selected_roles = [role_dropdown.value] if role_dropdown.value != 'All' else roles
@@ -276,9 +222,6 @@ update_pie(selected_roles, selected_areas)
 
 # ## Creating Layout
 
-# In[ ]:
-
-
 grid = widgets.GridspecLayout(2, 2, height='780px', width='1005', layout=widgets.Layout(align_items="center"))
 grid[0, 0] = pie_output
 grid[0, 1] = graph_output
@@ -287,17 +230,5 @@ grid[1, 0:2] = table_output
 
 # ## Creating Dashboard
 
-# In[ ]:
-
-
 dashboard_container = widgets.VBox([grid], layout=widgets.Layout(align_items="center"))
 widgets.VBox([widgets.HBox([role_dropdown, area_dropdown]), dashboard_container])
-
-
-# <iframe width="100%" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiYzhjYjE4OTQtMzBjMi00YWRlLThiYjMtMjU4M2M5YjM0MjAyIiwidCI6IjM3YTlhYzJmLTA5NjgtNGMyNy1hMDU2LTQ4ZDQ1ZTY0ODUyYyIsImMiOjEwfQ%3D%3D" frameborder="0" allowFullScreen="true"></iframe>
-
-# In[ ]:
-
-
-
-
